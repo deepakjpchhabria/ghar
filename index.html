@@ -69,7 +69,7 @@
             </div>
           </div>
 
-          <div style="margin-top:10px" class="small">Owner workflow: owner places exported post into <code>/circles/slug.json</code> (add to top of posts array) and commits to repo.</div>
+          <div style="margin-top:10px" class="small">Owner workflow: owner places exported post into <code>/ghar/slug.json</code> (add to top of posts array) and commits to repo.</div>
         </div>
 
         <div class="card" style="margin-top:10px">
@@ -84,7 +84,7 @@
       </div>
     </div>
 
-    <div style="margin-top:12px" class="small">How to publish: Upload circle JSON to <code>/circles/slug.json</code> in this repo (GitHub web UI → Add file). Invite family via link: <code>?circle=family</code>.</div>
+    <div style="margin-top:12px" class="small">How to publish: Upload circle JSON to <code>/ghar/slug.json</code> in this repo (GitHub web UI → Add file). Invite family via link: <code>?circle=family</code>.</div>
   </div>
 
 <script>
@@ -101,10 +101,10 @@ const postsList = qs('postsList');
 const postsInfo = qs('postsInfo');
 const curUrl = qs('curUrl');
 
-/* ---------- load circle JSON from /circles/<slug>.json ---------- */
+/* ---------- load circle JSON from /ghar/<slug>.json ---------- */
 async function loadCircle(slug){
   if(!slug) return alert('Enter circle slug (e.g. family)');
-  const url = `${location.origin}${location.pathname}circles/${encodeURIComponent(slug)}.json`;
+  const url = `${location.origin}${location.pathname}ghar/${encodeURIComponent(slug)}.json`;
   curUrl.innerText = url;
   try{
     const res = await fetch(url, {cache:'no-store'});
@@ -113,7 +113,7 @@ async function loadCircle(slug){
     renderCircle();
   }catch(e){
     circle = null;
-    postsList.innerHTML = `<div class="small">Circle not found at <code>${url}</code>. As owner, create one below and upload to <code>/circles/${slug}.json</code>.</div>`;
+    postsList.innerHTML = `<div class="small">Circle not found at <code>${url}</code>. As owner, create one below and upload to <code>/ghar/${slug}.json</code>.</div>`;
     postsInfo.innerText = '';
   }
 }
@@ -197,7 +197,7 @@ function previewOwner(){
     const obj = JSON.parse(raw);
     circle = obj;
     renderCircle();
-    alert('Preview loaded locally. To publish, download and upload to repo /circles/');
+    alert('Preview loaded locally. To publish, download and upload to repo /ghar/');
   }catch(e){ alert('Invalid JSON'); }
 }
 
