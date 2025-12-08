@@ -130,7 +130,7 @@
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZHpubXZ5aHl3ZmZkbHVubHd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMTU4OTIsImV4cCI6MjA4MDc5MTg5Mn0.FqTcMgBwNHR7S5oc1KV7PAJGWwFQbgnNZ52D6mGvI0Q'; // <-- replace
   // =============================================
 
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dist/esm/index.js';
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   // DOM refs
