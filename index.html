@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ApnaCircle — Private Circle</title>
+<style>
+  :root{--bg:#071028;--card:#0f1724;--accent:#ffb86b;--muted:#9fb0d1}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto;background:linear-gradient(180deg,var(--bg),#02121b);color:#fff;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px}
+  .wrap{width:min(920px,98vw);background:linear-gradient(180deg,#081428,#04101a);padding:18px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+  h1{margin:0;font-size:18px}
+  .muted{color:var(--muted);font-size:13px}
+  .header{display:flex;gap:12px;align-items:center;justify-content:space-between}
+  .main{display:grid;grid-template-columns:1fr 320px;gap:12px;margin-top:12px}
+  @media(max-width:840px){ .main{grid-template-columns:1fr} }
+  .card{background:linear-gradient(180deg,#0f1724,#071428);padding:12px;border-radius:10px}
+  .post{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+  .small{font-size:13px;color:var(--muted)}
+  input,textarea,select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff}
+  textarea{min-height:84px;resize:vertical}
+  button{background:var(--accent);color:#111;border:0;padding:8px 10px;border-radius:8px;font-weight:800;cursor:pointer}
+  .btnAlt{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .meta{display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .list{max-height:60vh;overflow:auto;padding-right:8px}
+  .link{color:var(--accent);text-decoration:none}
+  .center{display:flex;justify-content:center;gap:8px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1 id="title">ApnaCircle</h1>
+        <div class="muted" id="desc">Private circles for close friends & family — no ads, no algorithms.</div>
+      </div>
+      <div class="small">
+        <label class="small">Circle:
+          <input id="circleInput" placeholder="family" style="width:110px;display:inline-block;margin-left:8px"/>
+        </label>
+        <button id="loadBtn" class="btnAlt" style="margin-left:8px">Load</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Posts</strong><div class="small" id="postsInfo"></div></div>
+            <div class="small">URL: <span id="curUrl" class="muted"></span></div>
+          </div>
+          <div style="margin-top:8px" class="list" id="postsList"><div class="small">Load a circle to view posts</div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <strong>Create / Draft Post</strong>
+          <div class="small" style="margin-top:6px">Your posts are saved locally. Export JSON to send to the circle owner for publish.</div>
+          <div style="margin-top:10px"><input id="author" placeholder="Your name (e.g., Priya)"/></div>
+          <div style="margin-top:8px"><input id="emoji" placeholder="Emoji (optional) — e.g., ☕️"/></div>
+          <div style="margin-top:8px"><textarea id="text" placeholder="Write your update (short)"></textarea></div>
+
+          <div style="margin-top:10px" class="meta">
+            <div class="small">Timestamp will be recorded on export</div>
+            <div>
+              <button id="saveLocal" class="btn">Save Draft</button>
+              <button id="exportJson" class="btn">Export JSON</button>
+            </div>
+          </div>
+
+          <div style="margin-top:10px" class="small">Owner workflow: owner places exported post into <code>/circles/slug.json</code> (add to top of posts array) and commits to repo.</div>
+        </div>
+
+        <div class="card" style="margin-top:10px">
+          <strong>Quick Owner Tools</strong>
+          <div class="small" style="margin-top:8px">If you're the owner, you can paste a simple starter JSON here and download it to upload to repo.</div>
+          <textarea id="ownerJson" placeholder='{"slug":"family","name":"Family","description":"...","posts":[]}'> </textarea>
+          <div class="center" style="margin-top:8px">
+            <button id="downloadCircle" class="btn">Download Circle JSON</button>
+            <button id="previewCircle" class="btnAlt">Preview</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px" class="small">How to publish: Upload circle JSON to <code>/circles/slug.json</code> in this repo (GitHub web UI → Add file). Invite family via link: <code>?circle=family</code>.</div>
+  </div>
+
+<script>
+/* ---------- helper utils ---------- */
+function qs(id){ return document.getElementById(id); }
+function nowIso(){ return new Date().toISOString(); }
+function idFromTs(){ return new Date().toISOString().replace(/[:.]/g,'-'); }
+function pretty(o){ return JSON.stringify(o,null,2); }
+function download(filename, text){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:'application/json'})); a.download=filename; document.body.appendChild(a); a.click(); a.remove(); }
+
+/* ---------- state ---------- */
+let circle = null; // loaded circle object
+const postsList = qs('postsList');
+const postsInfo = qs('postsInfo');
+const curUrl = qs('curUrl');
+
+/* ---------- load circle JSON from /circles/<slug>.json ---------- */
+async function loadCircle(slug){
+  if(!slug) return alert('Enter circle slug (e.g. family)');
+  const url = `${location.origin}${location.pathname}circles/${encodeURIComponent(slug)}.json`;
+  curUrl.innerText = url;
+  try{
+    const res = await fetch(url, {cache:'no-store'});
+    if(!res.ok) throw new Error('Not found');
+    circle = await res.json();
+    renderCircle();
+  }catch(e){
+    circle = null;
+    postsList.innerHTML = `<div class="small">Circle not found at <code>${url}</code>. As owner, create one below and upload to <code>/circles/${slug}.json</code>.</div>`;
+    postsInfo.innerText = '';
+  }
+}
+
+/* ---------- render ---------- */
+function renderCircle(){
+  if(!circle){ postsList.innerHTML = `<div class="small">No circle loaded</div>`; return; }
+  qs('title').innerText = circle.name || 'ApnaCircle';
+  qs('desc').innerText = circle.description || '';
+  postsInfo.innerText = `${(circle.posts||[]).length} posts`;
+  // render posts (latest first)
+  const arr = (circle.posts||[]).slice().reverse();
+  postsList.innerHTML = '';
+  if(arr.length===0){ postsList.innerHTML = `<div class="small">No posts yet. Be the first!</div>`; return; }
+  for(const p of arr){
+    const d = document.createElement('div'); d.className='post';
+    d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${escapeHtml(p.author||'Anon')}</strong> <span class="small" style="margin-left:8px">${timeAgo(p.ts)}</span></div><div>${escapeHtml(p.meta?.emoji||'')}</div></div><div style="margin-top:8px">${escapeHtml(p.text)}</div>`;
+    postsList.appendChild(d);
+  }
+}
+
+/* helper: escape + timeAgo */
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function timeAgo(iso){
+  try{
+    const d = new Date(iso); const diff = Math.floor((Date.now() - d)/1000);
+    if(diff < 60) return `${diff}s ago`;
+    if(diff < 3600) return `${Math.floor(diff/60)}m ago`;
+    if(diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+    return new Date(iso).toLocaleString();
+  }catch(e){ return iso; }
+}
+
+/* ---------- local drafts ---------- */
+function saveDraft(){
+  const a = qs('author').value.trim() || 'Anon';
+  const t = qs('text').value.trim();
+  if(!t) return alert('Write something to save.');
+  const emoji = qs('emoji').value.trim() || '';
+  const draft = { id: idFromTs(), author: a, text: t, ts: nowIso(), meta: { emoji } };
+  // keep drafts in localStorage array
+  const drafts = JSON.parse(localStorage.getItem('ac_drafts')||'[]');
+  drafts.push(draft);
+  localStorage.setItem('ac_drafts', JSON.stringify(drafts));
+  alert('Draft saved locally. Use Export to share with owner.');
+  // clear text
+  qs('text').value = '';
+  qs('emoji').value = '';
+}
+
+/* ---------- export single post as JSON ---------- */
+function exportPost(){
+  const drafts = JSON.parse(localStorage.getItem('ac_drafts')||'[]');
+  if(drafts.length===0) return alert('No drafts found — Save a draft first.');
+  // default: export last draft
+  const p = drafts[drafts.length-1];
+  // Build small wrapper
+  const out = { date: new Date().toISOString().slice(0,10), post: p };
+  const filename = `apnacircle-post-${p.id}.json`;
+  download(filename, pretty(out));
+}
+
+/* ---------- owner tools ---------- */
+function downloadCircle(){
+  const raw = qs('ownerJson').value.trim();
+  if(!raw) return alert('Paste a valid circle JSON in the owner box.');
+  try{
+    const obj = JSON.parse(raw);
+    if(!obj.slug) return alert('Circle must have "slug".');
+    const filename = `circle-${obj.slug}.json`;
+    download(filename, pretty(obj));
+  }catch(e){
+    alert('Invalid JSON — ' + e.message);
+  }
+}
+
+function previewOwner(){
+  const raw = qs('ownerJson').value.trim();
+  if(!raw) return alert('Paste valid JSON');
+  try{
+    const obj = JSON.parse(raw);
+    circle = obj;
+    renderCircle();
+    alert('Preview loaded locally. To publish, download and upload to repo /circles/');
+  }catch(e){ alert('Invalid JSON'); }
+}
+
+/* ---------- small helpers ---------- */
+function loadFromQuery(){
+  const params = new URLSearchParams(location.search);
+  const circleParam = params.get('circle');
+  if(circleParam){
+    qs('circleInput').value = circleParam;
+    loadCircle(circleParam);
+  }
+}
+
+/* ---------- events ---------- */
+qs('loadBtn').addEventListener('click', ()=> loadCircle(qs('circleInput').value.trim()));
+qs('saveLocal').addEventListener('click', saveDraft);
+qs('exportJson').addEventListener('click', exportPost);
+qs('downloadCircle').addEventListener('click', downloadCircle);
+qs('previewCircle').addEventListener('click', previewOwner);
+
+/* ---------- init ---------- */
+loadFromQuery();
+
+// helpful UI: show example owner JSON template
+qs('ownerJson').value = JSON.stringify({
+  "slug":"family",
+  "name":"Family Circle",
+  "description":"Private family board",
+  "posts":[]
+}, null, 2);
+</script>
+</body>
+</html>
