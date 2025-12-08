@@ -1,0 +1,14 @@
+{
+  "slug": "family",
+  "name": "Family Circle",
+  "description": "Private family board — share short updates, photos (links).",
+  "posts": [
+    {
+      "id": "2025-01-01-1",
+      "author": "Deepak",
+      "text": "Welcome! This is our family board. Post short notes here.",
+      "ts": "2025-01-01T10:00:00.000Z",
+      "meta": { "emoji": "👋" }
+    }
+  ]
+}
