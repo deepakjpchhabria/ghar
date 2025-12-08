@@ -3,231 +3,429 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>ApnaCircle — Private Circle</title>
+<title>Ghar — Your private wall (prototype)</title>
 <style>
   :root{--bg:#071028;--card:#0f1724;--accent:#ffb86b;--muted:#9fb0d1}
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,Segoe UI,Roboto;background:linear-gradient(180deg,var(--bg),#02121b);color:#fff;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px}
-  .wrap{width:min(920px,98vw);background:linear-gradient(180deg,#081428,#04101a);padding:18px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
-  h1{margin:0;font-size:18px}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto;background:linear-gradient(180deg,var(--bg),#02121b);color:#fff;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:18px}
+  .wrap{width:980px;max-width:96vw;background:linear-gradient(180deg,#081428,#04101a);padding:16px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+  h1{margin:0;font-size:20px}
   .muted{color:var(--muted);font-size:13px}
-  .header{display:flex;gap:12px;align-items:center;justify-content:space-between}
-  .main{display:grid;grid-template-columns:1fr 320px;gap:12px;margin-top:12px}
-  @media(max-width:840px){ .main{grid-template-columns:1fr} }
-  .card{background:linear-gradient(180deg,#0f1724,#071428);padding:12px;border-radius:10px}
-  .post{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px}
-  .small{font-size:13px;color:var(--muted)}
-  input,textarea,select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff}
+  .row{display:flex;gap:8px;align-items:center}
+  input,textarea,select,button{font-family:inherit}
+  input,textarea,select{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
   textarea{min-height:84px;resize:vertical}
-  button{background:var(--accent);color:#111;border:0;padding:8px 10px;border-radius:8px;font-weight:800;cursor:pointer}
+  button{background:var(--accent);color:#111;border:0;padding:8px 12px;border-radius:8px;font-weight:800;cursor:pointer}
   .btnAlt{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-  .meta{display:flex;justify-content:space-between;gap:8px;align-items:center}
-  .list{max-height:60vh;overflow:auto;padding-right:8px}
-  .link{color:var(--accent);text-decoration:none}
-  .center{display:flex;justify-content:center;gap:8px}
+  .grid{display:grid;grid-template-columns:320px 1fr;gap:12px;margin-top:12px}
+  @media(max-width:860px){ .grid{grid-template-columns:1fr} }
+  .card{background:linear-gradient(180deg,#0f1724,#071428);padding:12px;border-radius:10px}
+  .post{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:10px}
+  .small{font-size:13px;color:var(--muted)}
+  .pill{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px}
+  .topRight{display:flex;gap:8px;align-items:center}
+  a.link{color:var(--accent);text-decoration:none}
+  .hr{height:1px;background:rgba(255,255,255,0.03);margin:12px 0;border-radius:2px}
+  .meta{font-size:12px;color:var(--muted)}
+  .avatar{width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,0.04);display:inline-block;text-align:center;line-height:40px;font-weight:800}
+  .tiny{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="header">
+    <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
-        <h1 id="title">ApnaCircle</h1>
-        <div class="muted" id="desc">Private circles for close friends & family — no ads, no algorithms.</div>
+        <h1>Ghar</h1>
+        <div class="muted">Private friends & family wall — old Facebook vibe (prototype)</div>
       </div>
-      <div class="small">
-        <label class="small">Circle:
-          <input id="circleInput" placeholder="family" style="width:110px;display:inline-block;margin-left:8px"/>
-        </label>
-        <button id="loadBtn" class="btnAlt" style="margin-left:8px">Load</button>
+      <div class="topRight">
+        <div id="userArea" class="small">Not signed in</div>
       </div>
     </div>
 
-    <div class="main">
+    <div class="grid">
+      <!-- left column -->
+      <div>
+        <div class="card" id="authCard">
+          <div id="authArea">
+            <div style="font-weight:800">Sign in / Sign up</div>
+            <div class="small" style="margin-top:6px">Use email (magic link) or create a password.</div>
+            <div style="margin-top:8px">
+              <input id="emailInput" placeholder="Email address" />
+            </div>
+            <div class="row" style="margin-top:8px">
+              <input id="passwordInput" placeholder="Password (optional)" type="password" />
+            </div>
+            <div style="margin-top:10px" class="row">
+              <button id="signInBtn">Sign in (magic-link)</button>
+              <button id="signupBtn" class="btnAlt">Sign up (password)</button>
+            </div>
+            <div id="authMsg" class="tiny" style="margin-top:8px;color:var(--muted)"></div>
+          </div>
+          <div id="profileArea" style="display:none;margin-top:12px">
+            <div style="font-weight:800">Your profile</div>
+            <div class="small" style="margin-top:6px">Set a display name and avatar URL.</div>
+            <div style="margin-top:8px"><input id="nameInput" placeholder="Full name (e.g., Deepak)"/></div>
+            <div style="margin-top:8px"><input id="avatarInput" placeholder="Avatar URL (optional)"/></div>
+            <div style="margin-top:8px"><textarea id="bioInput" placeholder="Short bio (optional)"></textarea></div>
+            <div style="margin-top:8px" class="row">
+              <button id="saveProfile">Save Profile</button>
+              <button id="signOut" class="btnAlt">Sign out</button>
+            </div>
+            <div id="profileMsg" class="tiny" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div style="font-weight:800">Friend requests</div>
+          <div class="small" style="margin-top:6px">Search by email to send a request</div>
+          <div style="margin-top:8px"><input id="friendEmail" placeholder="Friend's email"/></div>
+          <div style="margin-top:8px" class="row">
+            <button id="sendReq" class="btn">Send Request</button>
+            <button id="refreshReq" class="btnAlt">Refresh</button>
+          </div>
+          <div id="requestsList" style="margin-top:10px"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div style="font-weight:800">Quick links</div>
+          <div class="small" style="margin-top:6px">Deploy notes</div>
+          <div style="margin-top:8px" class="small">Replace SUPABASE_URL and SUPABASE_KEY in the top of the script.</div>
+        </div>
+      </div>
+
+      <!-- right column -->
       <div>
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><strong>Posts</strong><div class="small" id="postsInfo"></div></div>
-            <div class="small">URL: <span id="curUrl" class="muted"></span></div>
+            <div style="font-weight:900">Your Feed</div>
+            <div class="small">Realtime • Friends only</div>
           </div>
-          <div style="margin-top:8px" class="list" id="postsList"><div class="small">Load a circle to view posts</div></div>
-        </div>
-      </div>
 
-      <div>
-        <div class="card">
-          <strong>Create / Draft Post</strong>
-          <div class="small" style="margin-top:6px">Your posts are saved locally. Export JSON to send to the circle owner for publish.</div>
-          <div style="margin-top:10px"><input id="author" placeholder="Your name (e.g., Priya)"/></div>
-          <div style="margin-top:8px"><input id="emoji" placeholder="Emoji (optional) — e.g., ☕️"/></div>
-          <div style="margin-top:8px"><textarea id="text" placeholder="Write your update (short)"></textarea></div>
+          <div class="hr"></div>
 
-          <div style="margin-top:10px" class="meta">
-            <div class="small">Timestamp will be recorded on export</div>
-            <div>
-              <button id="saveLocal" class="btn">Save Draft</button>
-              <button id="exportJson" class="btn">Export JSON</button>
+          <div id="composer">
+            <div class="small">Write a post</div>
+            <div style="margin-top:8px"><textarea id="postText" placeholder="Share something..."></textarea></div>
+            <div style="margin-top:8px"><input id="postImage" placeholder="Image URL (optional)" /></div>
+            <div style="margin-top:8px" class="row">
+              <button id="postBtn">Post</button>
+              <button id="refreshFeed" class="btnAlt">Refresh</button>
             </div>
+            <div id="postMsg" class="tiny" style="margin-top:8px"></div>
           </div>
 
-          <div style="margin-top:10px" class="small">Owner workflow: owner places exported post into <code>/ghar/slug.json</code> (add to top of posts array) and commits to repo.</div>
-        </div>
+          <div class="hr"></div>
 
-        <div class="card" style="margin-top:10px">
-          <strong>Quick Owner Tools</strong>
-          <div class="small" style="margin-top:8px">If you're the owner, you can paste a simple starter JSON here and download it to upload to repo.</div>
-          <textarea id="ownerJson" placeholder='{"slug":"family","name":"Family","description":"...","posts":[]}'> </textarea>
-          <div class="center" style="margin-top:8px">
-            <button id="downloadCircle" class="btn">Download Circle JSON</button>
-            <button id="previewCircle" class="btnAlt">Preview</button>
-          </div>
+          <div id="feed" style="margin-top:8px;max-height:60vh;overflow:auto"></div>
         </div>
       </div>
     </div>
-
-    <div style="margin-top:12px" class="small">How to publish: Upload circle JSON to <code>/ghar/slug.json</code> in this repo (GitHub web UI → Add file). Invite family via link: <code>?circle=family</code>.</div>
   </div>
 
-<script>
-/* ---------- helper utils ---------- */
-function qs(id){ return document.getElementById(id); }
-function nowIso(){ return new Date().toISOString(); }
-function idFromTs(){ return new Date().toISOString().replace(/[:.]/g,'-'); }
-function pretty(o){ return JSON.stringify(o,null,2); }
-function download(filename, text){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:'application/json'})); a.download=filename; document.body.appendChild(a); a.click(); a.remove(); }
+<!-- include supabase client -->
+<script type="module">
+  // ======== CONFIG: PASTE YOUR KEYS HERE ========
+  const SUPABASE_URL = 'https://jvdznmvyhywffdlunlwx.supabase.co'; // <-- replace
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZHpubXZ5aHl3ZmZkbHVubHd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMTU4OTIsImV4cCI6MjA4MDc5MTg5Mn0.FqTcMgBwNHR7S5oc1KV7PAJGWwFQbgnNZ52D6mGvI0Q'; // <-- replace
+  // =============================================
 
-/* ---------- state ---------- */
-let circle = null; // loaded circle object
-const postsList = qs('postsList');
-const postsInfo = qs('postsInfo');
-const curUrl = qs('curUrl');
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ---------- load circle JSON from /ghar/<slug>.json ---------- */
-async function loadCircle(slug){
-  if(!slug) return alert('Enter circle slug (e.g. family)');
-  const url = `${location.origin}${location.pathname}ghar/${encodeURIComponent(slug)}.json`;
-  curUrl.innerText = url;
-  try{
-    const res = await fetch(url, {cache:'no-store'});
-    if(!res.ok) throw new Error('Not found');
-    circle = await res.json();
-    renderCircle();
-  }catch(e){
-    circle = null;
-    postsList.innerHTML = `<div class="small">Circle not found at <code>${url}</code>. As owner, create one below and upload to <code>/ghar/${slug}.json</code>.</div>`;
-    postsInfo.innerText = '';
+  // DOM refs
+  const userArea = document.getElementById('userArea');
+  const authArea = document.getElementById('authArea');
+  const profileArea = document.getElementById('profileArea');
+  const authMsg = document.getElementById('authMsg');
+  const profileMsg = document.getElementById('profileMsg');
+
+  const emailInput = document.getElementById('emailInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const signInBtn = document.getElementById('signInBtn');
+  const signupBtn = document.getElementById('signupBtn');
+  const signOutBtn = document.getElementById('signOut');
+
+  const nameInput = document.getElementById('nameInput');
+  const avatarInput = document.getElementById('avatarInput');
+  const bioInput = document.getElementById('bioInput');
+  const saveProfileBtn = document.getElementById('saveProfile');
+
+  const friendEmail = document.getElementById('friendEmail');
+  const sendReqBtn = document.getElementById('sendReq');
+  const refreshReqBtn = document.getElementById('refreshReq');
+  const requestsList = document.getElementById('requestsList');
+
+  const postText = document.getElementById('postText');
+  const postImage = document.getElementById('postImage');
+  const postBtn = document.getElementById('postBtn');
+  const postMsg = document.getElementById('postMsg');
+  const feedEl = document.getElementById('feed');
+  const refreshFeedBtn = document.getElementById('refreshFeed');
+
+  // state
+  let currentUser = null;
+  let currentProfile = null;
+  let subscriptions = [];
+
+  /* ---------- Auth ---------- */
+  async function initAuth(){
+    const { data: { user } } = await supabase.auth.getUser();
+    if(user){
+      onSignedIn(user);
+    } else {
+      showSignedOut();
+    }
+
+    // listen to auth state changes
+    supabase.auth.onAuthStateChange((event, session) => {
+      if(session?.user) onSignedIn(session.user);
+      else showSignedOut();
+    });
   }
-}
 
-/* ---------- render ---------- */
-function renderCircle(){
-  if(!circle){ postsList.innerHTML = `<div class="small">No circle loaded</div>`; return; }
-  qs('title').innerText = circle.name || 'ApnaCircle';
-  qs('desc').innerText = circle.description || '';
-  postsInfo.innerText = `${(circle.posts||[]).length} posts`;
-  // render posts (latest first)
-  const arr = (circle.posts||[]).slice().reverse();
-  postsList.innerHTML = '';
-  if(arr.length===0){ postsList.innerHTML = `<div class="small">No posts yet. Be the first!</div>`; return; }
-  for(const p of arr){
-    const d = document.createElement('div'); d.className='post';
-    d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${escapeHtml(p.author||'Anon')}</strong> <span class="small" style="margin-left:8px">${timeAgo(p.ts)}</span></div><div>${escapeHtml(p.meta?.emoji||'')}</div></div><div style="margin-top:8px">${escapeHtml(p.text)}</div>`;
-    postsList.appendChild(d);
+  function showSignedOut(){
+    currentUser = null;
+    currentProfile = null;
+    userArea.innerText = 'Not signed in';
+    authArea.style.display = '';
+    profileArea.style.display = 'none';
+    feedEl.innerHTML = '<div class="small">Sign in to see your feed</div>';
   }
-}
 
-/* helper: escape + timeAgo */
-function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function timeAgo(iso){
-  try{
-    const d = new Date(iso); const diff = Math.floor((Date.now() - d)/1000);
-    if(diff < 60) return `${diff}s ago`;
-    if(diff < 3600) return `${Math.floor(diff/60)}m ago`;
-    if(diff < 86400) return `${Math.floor(diff/3600)}h ago`;
-    return new Date(iso).toLocaleString();
-  }catch(e){ return iso; }
-}
-
-/* ---------- local drafts ---------- */
-function saveDraft(){
-  const a = qs('author').value.trim() || 'Anon';
-  const t = qs('text').value.trim();
-  if(!t) return alert('Write something to save.');
-  const emoji = qs('emoji').value.trim() || '';
-  const draft = { id: idFromTs(), author: a, text: t, ts: nowIso(), meta: { emoji } };
-  // keep drafts in localStorage array
-  const drafts = JSON.parse(localStorage.getItem('ac_drafts')||'[]');
-  drafts.push(draft);
-  localStorage.setItem('ac_drafts', JSON.stringify(drafts));
-  alert('Draft saved locally. Use Export to share with owner.');
-  // clear text
-  qs('text').value = '';
-  qs('emoji').value = '';
-}
-
-/* ---------- export single post as JSON ---------- */
-function exportPost(){
-  const drafts = JSON.parse(localStorage.getItem('ac_drafts')||'[]');
-  if(drafts.length===0) return alert('No drafts found — Save a draft first.');
-  // default: export last draft
-  const p = drafts[drafts.length-1];
-  // Build small wrapper
-  const out = { date: new Date().toISOString().slice(0,10), post: p };
-  const filename = `apnacircle-post-${p.id}.json`;
-  download(filename, pretty(out));
-}
-
-/* ---------- owner tools ---------- */
-function downloadCircle(){
-  const raw = qs('ownerJson').value.trim();
-  if(!raw) return alert('Paste a valid circle JSON in the owner box.');
-  try{
-    const obj = JSON.parse(raw);
-    if(!obj.slug) return alert('Circle must have "slug".');
-    const filename = `circle-${obj.slug}.json`;
-    download(filename, pretty(obj));
-  }catch(e){
-    alert('Invalid JSON — ' + e.message);
+  async function onSignedIn(user){
+    currentUser = user;
+    userArea.innerHTML = `<span class="pill">${user.email}</span>`;
+    authArea.style.display = 'none';
+    profileArea.style.display = '';
+    authMsg.innerText = '';
+    await ensureProfile();
+    await refreshAll();
+    setupRealtime();
   }
-}
 
-function previewOwner(){
-  const raw = qs('ownerJson').value.trim();
-  if(!raw) return alert('Paste valid JSON');
-  try{
-    const obj = JSON.parse(raw);
-    circle = obj;
-    renderCircle();
-    alert('Preview loaded locally. To publish, download and upload to repo /ghar/');
-  }catch(e){ alert('Invalid JSON'); }
-}
+  // sign in (magic link)
+  signInBtn.addEventListener('click', async ()=>{
+    const email = emailInput.value.trim();
+    if(!email) return authMsg.innerText = 'Enter email';
+    authMsg.innerText = 'Sending magic link...';
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if(error) authMsg.innerText = 'Error: ' + error.message;
+    else authMsg.innerText = 'Magic link sent — check your email.';
+  });
 
-/* ---------- small helpers ---------- */
-function loadFromQuery(){
-  const params = new URLSearchParams(location.search);
-  const circleParam = params.get('circle');
-  if(circleParam){
-    qs('circleInput').value = circleParam;
-    loadCircle(circleParam);
+  // sign up with password (simple)
+  signupBtn.addEventListener('click', async ()=>{
+    const email = emailInput.value.trim();
+    const pass = passwordInput.value.trim();
+    if(!email || !pass) return authMsg.innerText = 'Enter email & password';
+    authMsg.innerText = 'Creating account...';
+    const { data, error } = await supabase.auth.signUp({ email, password: pass });
+    if(error) authMsg.innerText = 'Error: ' + error.message;
+    else authMsg.innerText = 'Check email to confirm (or you can sign in).';
+  });
+
+  signOutBtn.addEventListener('click', async ()=>{
+    await supabase.auth.signOut();
+    showSignedOut();
+  });
+
+  /* ---------- Profile ---------- */
+  async function ensureProfile(){
+    // fetch profile or create empty
+    const uid = currentUser.id;
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', uid).single();
+    if(error && error.code !== 'PGRST116') {
+      // no profile row — create
+      await supabase.from('profiles').insert([{ id: uid, full_name: currentUser.email, avatar_url: '', bio: '' }]);
+      currentProfile = { id: uid, full_name: currentUser.email, avatar_url: '', bio: '' };
+    } else {
+      currentProfile = data || { id: uid, full_name: currentUser.email, avatar_url: '', bio: '' };
+    }
+    nameInput.value = currentProfile.full_name || '';
+    avatarInput.value = currentProfile.avatar_url || '';
+    bioInput.value = currentProfile.bio || '';
   }
-}
 
-/* ---------- events ---------- */
-qs('loadBtn').addEventListener('click', ()=> loadCircle(qs('circleInput').value.trim()));
-qs('saveLocal').addEventListener('click', saveDraft);
-qs('exportJson').addEventListener('click', exportPost);
-qs('downloadCircle').addEventListener('click', downloadCircle);
-qs('previewCircle').addEventListener('click', previewOwner);
+  saveProfileBtn.addEventListener('click', async ()=>{
+    const uid = currentUser.id;
+    const obj = { id: uid, full_name: nameInput.value.trim(), avatar_url: avatarInput.value.trim(), bio: bioInput.value.trim() };
+    const { error } = await supabase.from('profiles').upsert(obj);
+    if(error) profileMsg.innerText = 'Error saving profile: ' + error.message;
+    else profileMsg.innerText = 'Profile saved.';
+    await ensureProfile();
+  });
 
-/* ---------- init ---------- */
-loadFromQuery();
+  /* ---------- Friends (requests / accept) ---------- */
+  sendReqBtn.addEventListener('click', async ()=>{
+    const email = friendEmail.value.trim();
+    if(!email) return alert('Enter friend email');
+    // find user by email via auth.users table (use supabase RPC via admin? - fallback: try fetch from auth API)
+    const { data: users, error } = await supabase.rpc('get_user_by_email', { user_email: email }).catch(()=>({ data:null, error:null }));
+    // If RPC not available, we try lookup via auth admin - but anon cannot call; so we fallback to prompt for their user id/email and create a 'pending' by email stored in friends.requested_email
+    // For simplicity in prototype: attempt to insert a friend request with requested = NULL and store email in meta
+    // BUT your SQL uses requested uuid references auth.users(id) — so the reliable flow is: the friend signs up, then you send request by selecting their profile via a small lookup UI.
+    alert('Prototype note: Add friend after they sign up. For now type their exact user id (from owner) or ask them to share their email then we can look up.');
+  });
 
-// helpful UI: show example owner JSON template
-qs('ownerJson').value = JSON.stringify({
-  "slug":"family",
-  "name":"Family Circle",
-  "description":"Private family board",
-  "posts":[]
-}, null, 2);
+  // helper: refresh incoming requests for current user
+  refreshReqBtn.addEventListener('click', fetchRequests);
+
+  async function fetchRequests(){
+    if(!currentUser) return;
+    // incoming requests where requested = current user id and status = pending
+    const { data, error } = await supabase.from('friends').select('id,requester,requested,status,created_at,profiles!requester(full_name,avatar_url)').eq('requested', currentUser.id).eq('status','pending');
+    requestsList.innerHTML = '';
+    if(error){ requestsList.innerText = 'Err ' + error.message; return; }
+    if(!data || data.length===0){ requestsList.innerHTML = '<div class="small">No incoming requests</div>'; return; }
+    for(const r of data){
+      const node = document.createElement('div'); node.className='tiny';
+      const name = r.profiles?.full_name || r.requester;
+      node.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><div><strong>${escapeHtml(name)}</strong><div class="small">${new Date(r.created_at).toLocaleString()}</div></div><div><button data-id="${r.id}" class="acceptBtn btnAlt">Accept</button></div></div>`;
+      requestsList.appendChild(node);
+    }
+    // wire accept buttons
+    requestsList.querySelectorAll('.acceptBtn').forEach(b=> b.addEventListener('click', async (e)=>{
+      const id = e.target.dataset.id;
+      // update status to accepted (only allowed for requested user per RLS)
+      const { error } = await supabase.from('friends').update({ status: 'accepted' }).eq('id', id);
+      if(error) alert('Err: ' + error.message); else fetchRequests();
+      await refreshAll();
+    }));
+  }
+
+  /* ---------- Posts & Feed ---------- */
+
+  postBtn.addEventListener('click', async ()=>{
+    if(!currentUser) return alert('Sign in first');
+    const text = postText.value.trim();
+    if(!text) return alert('Write a post');
+    postBtn.disabled = true;
+    postMsg.innerText = 'Posting...';
+    const payload = { author_id: currentUser.id, content: text, image_url: postImage.value.trim() || null };
+    const { data, error } = await supabase.from('posts').insert([payload]).select().single();
+    if(error) postMsg.innerText = 'Error: ' + error.message;
+    else { postMsg.innerText = 'Posted.'; postText.value = ''; postImage.value = ''; fetchFeed(); }
+    postBtn.disabled = false;
+  });
+
+  refreshFeedBtn.addEventListener('click', fetchFeed);
+
+  async function fetchFeed(){
+    if(!currentUser) return;
+    // fetch posts where author is me OR is an accepted friend
+    // We'll query posts, and Supabase RLS will allow only appropriate rows; but we still want them ordered
+    const { data, error } = await supabase.from('posts').select('id,author_id,content,image_url,created_at,profiles!author_id(full_name,avatar_url)').order('created_at', { ascending:false }).limit(100);
+    if(error){ feedEl.innerHTML = '<div class="small">Error loading feed</div>'; console.warn(error); return; }
+    renderFeed(data || []);
+  }
+
+  function renderFeed(posts){
+    feedEl.innerHTML = '';
+    if(!posts || posts.length===0){ feedEl.innerHTML = '<div class="small">No posts yet — make the first post!</div>'; return; }
+    for(const p of posts){
+      const d = document.createElement('div'); d.className='post';
+      const authorName = p.profiles?.full_name || p.author_id;
+      const time = new Date(p.created_at).toLocaleString();
+      d.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>${escapeHtml(authorName)}</strong> <div class="tiny" style="display:inline-block;margin-left:8px">${timeAgo(p.created_at)}</div></div>
+          <div class="tiny">${escapeHtml(p.image_url? '🖼️' : '')}</div>
+        </div>
+        <div style="margin-top:8px">${escapeHtml(p.content)}</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button class="commentBtn btnAlt" data-id="${p.id}">Comment</button>
+          <div class="pill tiny" style="padding:4px 8px" id="c-count-${p.id}">Comments: —</div>
+        </div>
+        <div id="comments-${p.id}" style="margin-top:8px"></div>
+      `;
+      feedEl.appendChild(d);
+      loadComments(p.id);
+    }
+    // wire comment buttons
+    feedEl.querySelectorAll('.commentBtn').forEach(b=> b.addEventListener('click', (e)=>{
+      const id = e.target.dataset.id;
+      const area = document.getElementById('comments-'+id);
+      if(!area.innerHTML){
+        area.innerHTML = `<div style="display:flex;gap:8px;margin-top:8px"><input id="cinput-${id}" placeholder="Write comment..." style="flex:1"/><button data-id="${id}" class="cpostBtn btn">Post</button></div>`;
+        area.querySelectorAll('.cpostBtn').forEach(cb=> cb.addEventListener('click', async (ev)=>{
+          const pid = ev.target.dataset.id;
+          const val = document.getElementById('cinput-'+pid).value.trim();
+          if(!val) return;
+          const { error } = await supabase.from('comments').insert([{ post_id: pid, author_id: currentUser.id, content: val }]);
+          if(error) alert('Err: '+error.message); else { loadComments(pid); document.getElementById('cinput-'+pid).value=''; }
+        }));
+      } else { area.innerHTML=''; }
+    }));
+  }
+
+  async function loadComments(postId){
+    const { data, error } = await supabase.from('comments').select('id,content,author_id,created_at,profiles!author_id(full_name)').eq('post_id', postId).order('created_at', { ascending:true });
+    const wrap = document.getElementById('comments-'+postId);
+    const countEl = document.getElementById('c-count-'+postId);
+    if(error){ if(countEl) countEl.innerText = 'Comments: ?'; return; }
+    if(countEl) countEl.innerText = 'Comments: ' + (data?.length||0);
+    if(!wrap) return;
+    if(!data || data.length===0) { wrap.innerHTML += '<div class="small" style="margin-top:8px">No comments yet</div>'; return; }
+    let html = '<div style="margin-top:8px">';
+    for(const c of data) html += `<div style="padding:6px 0;border-top:1px dashed rgba(255,255,255,0.02)"><strong>${escapeHtml(c.profiles?.full_name||c.author_id)}</strong> <span class="tiny" style="margin-left:8px">${timeAgo(c.created_at)}</span><div style="margin-top:6px">${escapeHtml(c.content)}</div></div>`;
+    html += '</div>';
+    wrap.innerHTML = html;
+  }
+
+  /* ---------- Realtime ---------- */
+  function setupRealtime(){
+    // remove old subs
+    subscriptions.forEach(s=> s.unsubscribe?.());
+    subscriptions = [];
+
+    // posts
+    const postsSub = supabase.channel('public:posts')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
+        // refresh feed on new post
+        fetchFeed();
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts' }, payload => fetchFeed())
+      .subscribe();
+    subscriptions.push(postsSub);
+
+    // comments
+    const commSub = supabase.channel('public:comments')
+      .on('postgres_changes', { event: '*', schema:'public', table:'comments' }, payload => {
+        fetchFeed();
+      }).subscribe();
+    subscriptions.push(commSub);
+
+    // friends (to refresh feed when relation changes)
+    const friendsSub = supabase.channel('public:friends')
+      .on('postgres_changes', { event: '*', schema:'public', table:'friends' }, payload => fetchFeed())
+      .subscribe();
+    subscriptions.push(friendsSub);
+  }
+
+  /* ---------- helpers + refresh ---------- */
+  async function refreshAll(){
+    await Promise.all([fetchFeed(), fetchRequests()]);
+  }
+
+  function timeAgo(iso){
+    try{
+      const d = new Date(iso || '');
+      const diff = Math.floor((Date.now() - d)/1000);
+      if(diff < 60) return `${diff}s ago`;
+      if(diff < 3600) return `${Math.floor(diff/60)}m ago`;
+      if(diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+      return new Date(iso).toLocaleString();
+    }catch(e){ return iso; }
+  }
+  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* ---------- init ---------- */
+  initAuth();
+
+  // try to fetch feed periodically in case realtime didn't trigger
+  setInterval(()=> { if(currentUser) fetchFeed(); }, 15000);
+
 </script>
 </body>
 </html>
