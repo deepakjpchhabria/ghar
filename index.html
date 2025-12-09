@@ -99,7 +99,7 @@
             <div style="margin-top:10px" class="row">
               <button id="signInBtn">Sign in (magic-link)</button>
               <button id="signupBtn" class="btnAlt">Sign up (password)</button>
-              <button id="passwordLoginBtn" style="margin-left:6px">Login with Password</button>
+              <button id="passwordLoginBtn" style="margin-top:8px">Login with Password</button>
             </div>
             <div id="authMsg" class="tiny" style="margin-top:8px;color:var(--muted)"></div>
           </div>
@@ -266,6 +266,61 @@
     if(error) authMsg.innerText = 'Error: ' + error.message;
     else authMsg.innerText = 'Check email to confirm (or you can sign in).';
   });
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+            
+            
+  
+  passwordLoginBtn.addEventListener("click", async () => {
+  authMsg.innerText = "Logging in...";
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    authMsg.innerText = "Email & password required";
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      authMsg.innerText = "Error: " + error.message;
+      return;
+    }
+
+    authMsg.innerText = "Success! Logged in.";
+    onSignedIn(data.user);
+
+  } catch (e) {
+    authMsg.innerText = "Unexpected error: " + e.message;
+  }
+});
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   // Password login (existing accounts created in Supabase dashboard)
   (function attachPasswordLogin(){
