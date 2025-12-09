@@ -32,28 +32,6 @@
 </style>
 </head>
 <body>
-  <!-- CHECK 3: does handler fire & is supabase client present? -->
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  try {
-    const el = document.getElementById('passwordLoginBtn');
-    if(!el){ alert('CHECK3: button missing'); return; }
-    // add a temporary one-time listener to show clicks
-    el.addEventListener('click', function once(){
-      alert('CHECK3: passwordLoginBtn clicked (handler test)');
-      el.removeEventListener('click', once);
-    });
-
-    // check supabase client presence (non-blocking)
-    try {
-      if(window.supabase) alert('CHECK3: window.supabase FOUND');
-      else alert('CHECK3: window.supabase NOT FOUND — SDK may not be loaded as global');
-    } catch(e){
-      alert('CHECK3: supabase check error');
-    }
-  } catch(e){ alert('CHECK3: unexpected ' + (e?.message||e)); }
-});
-</script>
   <div class="wrap">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
@@ -149,11 +127,11 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- include supabase client -->
 <script type="module">
   // ======== CONFIG: PASTE YOUR KEYS HERE ========
-  const SUPABASE_URL = 'https://jvdznmvyhywffdlunlwx.supabase.co'; // <-- replace
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZHpubXZ5aHl3ZmZkbHVubHd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMTU4OTIsImV4cCI6MjA4MDc5MTg5Mn0.FqTcMgBwNHR7S5oc1KV7PAJGWwFQbgnNZ52D6mGvI0Q'; // <-- replace
+  const SUPABASE_URL = 'https://jvdznmvyhywffdlunlwx.supabase.co'; // <-- keep your value
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZHpubXZ5aHl3ZmZkbHVubHd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMTU4OTIsImV4cCI6MjA4MDc5MTg5Mn0.FqTcMgBwNHR7S5oc1KV7PAJGWwFQbgnNZ52D6mGvI0Q'; // <-- keep your value
   // =============================================
 
-import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dist/esm/index.js';
+  import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dist/esm/index.js';
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   // DOM refs
@@ -167,6 +145,7 @@ import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dis
   const passwordInput = document.getElementById('passwordInput');
   const signInBtn = document.getElementById('signInBtn');
   const signupBtn = document.getElementById('signupBtn');
+  const passwordLoginBtn = document.getElementById('passwordLoginBtn');
   const signOutBtn = document.getElementById('signOut');
 
   const nameInput = document.getElementById('nameInput');
@@ -247,119 +226,59 @@ import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dis
     if(error) authMsg.innerText = 'Error: ' + error.message;
     else authMsg.innerText = 'Check email to confirm (or you can sign in).';
   });
-  
-  // ---- REPLACE / ADD this password-login handler (debug-friendly) ----
-(function attachPasswordLogin(){
-  // remove any existing listener (safe)
-  const existing = document.getElementById('passwordLoginBtn');
-  if(!existing){
-    console.warn('passwordLoginBtn element not found at attach time');
-    return;
-  }
 
-  // remove duplicate listeners (if any) by cloning node
-  const clone = existing.cloneNode(true);
-  existing.parentNode.replaceChild(clone, existing);
-
-  clone.addEventListener('click', async function passwordLoginHandler(e){
-    try {
-      e.preventDefault();
-      // immediate debug alert so you know this handler ran
-      alert('Password login handler fired');
-
-      const email = emailInput.value?.trim();
-      const pass = passwordInput.value?.trim();
-
-      if(!email || !pass){
-        alert('Enter email and password');
-        return;
-      }
-
-      // call supabase password sign-in
-      alert('Calling Supabase signInWithPassword...');
-      const resp = await supabase.auth.signInWithPassword({ email, password: pass });
-
-      // resp shape can be { data, error } or { error, data } depending on SDK; handle both
-      const err = resp?.error || (resp?.data && resp.data.error) || null;
-      const data = resp?.data || resp;
-
-      if(err){
-        // show full error information
-        const msg = err.message || JSON.stringify(err);
-        alert('Login failed: ' + msg);
-        return;
-      }
-
-      // success — show what we received
-      const userEmail = (data?.user?.email) ? data.user.email : (email || 'unknown');
-      alert('Login success: ' + userEmail);
-
-      // call existing post-login flow (if present)
-      if(typeof onSignedIn === 'function'){
-        try { onSignedIn(data.user || data); } catch(x){ console.warn('onSignedIn error', x); }
-      } else {
-        // update UI minimally
-        userArea.innerText = 'Signed in: ' + userEmail;
-      }
-    } catch(ex){
-      alert('Unexpected handler error: ' + (ex?.message || JSON.stringify(ex)));
-      console.error('passwordLoginHandler exception', ex);
-    }
-  });
-})();
-  
-  
-  
-  
-  
-  
-  
-  
-  
   // Password login (existing accounts created in Supabase dashboard)
-const passwordLoginBtn = document.getElementById('passwordLoginBtn');
-
-passwordLoginBtn?.addEventListener('click', async () => {
-  
-  alert('Password login handler fired');
-  
-  const email = emailInput.value.trim();
-  const pass = passwordInput.value.trim();
-
-  if (!email || !pass) {
-    alert('Enter email and password');
-    return;
-  }
-
-  try {
-    passwordLoginBtn.disabled = true;
-    authMsg.innerText = 'Signing in...';
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password: pass
-    });
-
-    if (error) {
-      alert('Login error: ' + error.message);
-      authMsg.innerText = 'Error: ' + error.message;
-      passwordLoginBtn.disabled = false;
+  (function attachPasswordLogin(){
+    const el = document.getElementById('passwordLoginBtn');
+    if(!el){
+      console.warn('passwordLoginBtn element not found at attach time');
       return;
     }
+    // replace node to avoid duplicate listeners (safe)
+    const clone = el.cloneNode(true);
+    el.parentNode.replaceChild(clone, el);
 
-    // on success, supabase returns session/user in data
-    authMsg.innerText = 'Login successful';
-    alert('Logged in as ' + (data.user?.email || email));
-    // call the same post-login flow
-    onSignedIn(data.user);
-  } catch (e) {
-    console.error('Unexpected login error', e);
-    alert('Unexpected error: ' + (e?.message || e));
-    authMsg.innerText = 'Unexpected error';
-  } finally {
-    passwordLoginBtn.disabled = false;
-  }
-});
+    clone.addEventListener('click', async function passwordLoginHandler(e){
+      try {
+        e.preventDefault();
+        // immediate debug alert so you know this handler ran
+        // (you can remove the next alert line once verified)
+        alert('Password login handler fired');
+
+        const email = emailInput.value?.trim();
+        const pass = passwordInput.value?.trim();
+
+        if(!email || !pass){
+          alert('Enter email and password');
+          return;
+        }
+
+        // call supabase password sign-in
+        const resp = await supabase.auth.signInWithPassword({ email, password: pass });
+
+        const err = resp?.error || (resp?.data && resp.data.error) || null;
+        const data = resp?.data || resp;
+
+        if(err){
+          const msg = err.message || JSON.stringify(err);
+          alert('Login failed: ' + msg);
+          return;
+        }
+
+        const userEmail = (data?.user?.email) ? data.user.email : (email || 'unknown');
+        alert('Login success: ' + userEmail);
+
+        if(typeof onSignedIn === 'function'){
+          try { onSignedIn(data.user || data); } catch(x){ console.warn('onSignedIn error', x); }
+        } else {
+          userArea.innerText = 'Signed in: ' + userEmail;
+        }
+      } catch(ex){
+        alert('Unexpected handler error: ' + (ex?.message || JSON.stringify(ex)));
+        console.error('passwordLoginHandler exception', ex);
+      }
+    });
+  })();
 
   signOutBtn.addEventListener('click', async ()=>{
     await supabase.auth.signOut();
@@ -396,11 +315,6 @@ passwordLoginBtn?.addEventListener('click', async () => {
   sendReqBtn.addEventListener('click', async ()=>{
     const email = friendEmail.value.trim();
     if(!email) return alert('Enter friend email');
-    // find user by email via auth.users table (use supabase RPC via admin? - fallback: try fetch from auth API)
-    const { data: users, error } = await supabase.rpc('get_user_by_email', { user_email: email }).catch(()=>({ data:null, error:null }));
-    // If RPC not available, we try lookup via auth admin - but anon cannot call; so we fallback to prompt for their user id/email and create a 'pending' by email stored in friends.requested_email
-    // For simplicity in prototype: attempt to insert a friend request with requested = NULL and store email in meta
-    // BUT your SQL uses requested uuid references auth.users(id) — so the reliable flow is: the friend signs up, then you send request by selecting their profile via a small lookup UI.
     alert('Prototype note: Add friend after they sign up. For now type their exact user id (from owner) or ask them to share their email then we can look up.');
   });
 
@@ -409,7 +323,6 @@ passwordLoginBtn?.addEventListener('click', async () => {
 
   async function fetchRequests(){
     if(!currentUser) return;
-    // incoming requests where requested = current user id and status = pending
     const { data, error } = await supabase.from('friends').select('id,requester,requested,status,created_at,profiles!requester(full_name,avatar_url)').eq('requested', currentUser.id).eq('status','pending');
     requestsList.innerHTML = '';
     if(error){ requestsList.innerText = 'Err ' + error.message; return; }
@@ -420,10 +333,8 @@ passwordLoginBtn?.addEventListener('click', async () => {
       node.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><div><strong>${escapeHtml(name)}</strong><div class="small">${new Date(r.created_at).toLocaleString()}</div></div><div><button data-id="${r.id}" class="acceptBtn btnAlt">Accept</button></div></div>`;
       requestsList.appendChild(node);
     }
-    // wire accept buttons
     requestsList.querySelectorAll('.acceptBtn').forEach(b=> b.addEventListener('click', async (e)=>{
       const id = e.target.dataset.id;
-      // update status to accepted (only allowed for requested user per RLS)
       const { error } = await supabase.from('friends').update({ status: 'accepted' }).eq('id', id);
       if(error) alert('Err: ' + error.message); else fetchRequests();
       await refreshAll();
@@ -449,8 +360,6 @@ passwordLoginBtn?.addEventListener('click', async () => {
 
   async function fetchFeed(){
     if(!currentUser) return;
-    // fetch posts where author is me OR is an accepted friend
-    // We'll query posts, and Supabase RLS will allow only appropriate rows; but we still want them ordered
     const { data, error } = await supabase.from('posts').select('id,author_id,content,image_url,created_at,profiles!author_id(full_name,avatar_url)').order('created_at', { ascending:false }).limit(100);
     if(error){ feedEl.innerHTML = '<div class="small">Error loading feed</div>'; console.warn(error); return; }
     renderFeed(data || []);
@@ -478,7 +387,6 @@ passwordLoginBtn?.addEventListener('click', async () => {
       feedEl.appendChild(d);
       loadComments(p.id);
     }
-    // wire comment buttons
     feedEl.querySelectorAll('.commentBtn').forEach(b=> b.addEventListener('click', (e)=>{
       const id = e.target.dataset.id;
       const area = document.getElementById('comments-'+id);
@@ -511,28 +419,19 @@ passwordLoginBtn?.addEventListener('click', async () => {
 
   /* ---------- Realtime ---------- */
   function setupRealtime(){
-    // remove old subs
     subscriptions.forEach(s=> s.unsubscribe?.());
     subscriptions = [];
 
-    // posts
     const postsSub = supabase.channel('public:posts')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
-        // refresh feed on new post
-        fetchFeed();
-      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => { fetchFeed(); })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts' }, payload => fetchFeed())
       .subscribe();
     subscriptions.push(postsSub);
 
-    // comments
     const commSub = supabase.channel('public:comments')
-      .on('postgres_changes', { event: '*', schema:'public', table:'comments' }, payload => {
-        fetchFeed();
-      }).subscribe();
+      .on('postgres_changes', { event: '*', schema:'public', table:'comments' }, payload => { fetchFeed(); }).subscribe();
     subscriptions.push(commSub);
 
-    // friends (to refresh feed when relation changes)
     const friendsSub = supabase.channel('public:friends')
       .on('postgres_changes', { event: '*', schema:'public', table:'friends' }, payload => fetchFeed())
       .subscribe();
@@ -558,8 +457,6 @@ passwordLoginBtn?.addEventListener('click', async () => {
 
   /* ---------- init ---------- */
   initAuth();
-
-  // try to fetch feed periodically in case realtime didn't trigger
   setInterval(()=> { if(currentUser) fetchFeed(); }, 15000);
 
 </script>
