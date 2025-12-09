@@ -32,14 +32,26 @@
 </style>
 </head>
 <body>
-  <!-- CHECK 2: is the passwordLoginBtn present in DOM? -->
+  <!-- CHECK 3: does handler fire & is supabase client present? -->
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   try {
     const el = document.getElementById('passwordLoginBtn');
-    if(el) alert('CHECK2: passwordLoginBtn FOUND');
-    else alert('CHECK2: passwordLoginBtn NOT FOUND');
-  } catch(e){ alert('CHECK2: error ' + (e?.message||e)); }
+    if(!el){ alert('CHECK3: button missing'); return; }
+    // add a temporary one-time listener to show clicks
+    el.addEventListener('click', function once(){
+      alert('CHECK3: passwordLoginBtn clicked (handler test)');
+      el.removeEventListener('click', once);
+    });
+
+    // check supabase client presence (non-blocking)
+    try {
+      if(window.supabase) alert('CHECK3: window.supabase FOUND');
+      else alert('CHECK3: window.supabase NOT FOUND — SDK may not be loaded as global');
+    } catch(e){
+      alert('CHECK3: supabase check error');
+    }
+  } catch(e){ alert('CHECK3: unexpected ' + (e?.message||e)); }
 });
 </script>
   <div class="wrap">
