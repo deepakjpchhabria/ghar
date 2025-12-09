@@ -59,6 +59,7 @@
             <div style="margin-top:10px" class="row">
               <button id="signInBtn">Sign in (magic-link)</button>
               <button id="signupBtn" class="btnAlt">Sign up (password)</button>
+              <button id="passwordLoginBtn" style="margin-left:6px">Login with Password</button>
             </div>
             <div id="authMsg" class="tiny" style="margin-top:8px;color:var(--muted)"></div>
           </div>
@@ -224,6 +225,48 @@ import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dis
     if(error) authMsg.innerText = 'Error: ' + error.message;
     else authMsg.innerText = 'Check email to confirm (or you can sign in).';
   });
+  
+  // Password login (existing accounts created in Supabase dashboard)
+const passwordLoginBtn = document.getElementById('passwordLoginBtn');
+
+passwordLoginBtn?.addEventListener('click', async () => {
+  const email = emailInput.value.trim();
+  const pass = passwordInput.value.trim();
+
+  if (!email || !pass) {
+    alert('Enter email and password');
+    return;
+  }
+
+  try {
+    passwordLoginBtn.disabled = true;
+    authMsg.innerText = 'Signing in...';
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: pass
+    });
+
+    if (error) {
+      alert('Login error: ' + error.message);
+      authMsg.innerText = 'Error: ' + error.message;
+      passwordLoginBtn.disabled = false;
+      return;
+    }
+
+    // on success, supabase returns session/user in data
+    authMsg.innerText = 'Login successful';
+    alert('Logged in as ' + (data.user?.email || email));
+    // call the same post-login flow
+    onSignedIn(data.user);
+  } catch (e) {
+    console.error('Unexpected login error', e);
+    alert('Unexpected error: ' + (e?.message || e));
+    authMsg.innerText = 'Unexpected error';
+  } finally {
+    passwordLoginBtn.disabled = false;
+  }
+});
 
   signOutBtn.addEventListener('click', async ()=>{
     await supabase.auth.signOut();
