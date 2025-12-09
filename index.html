@@ -85,20 +85,18 @@
 
   function show(m){ msg.innerText = m; }
 
-  signup.addEventListener("click", async () => {
-    show("Creating account...");
+  signupBtn.addEventListener('click', async () => {
+  const email = emailInput.value.trim();
+  const pass  = passwordInput.value.trim();
+  if (!email || !pass) return authMsg.innerText = "Enter email & password";
 
-    const res = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value
-    });
+  authMsg.innerText = "Creating account...";
+  const { data, error } = await supabase.auth.signUp({ email, password: pass });
 
-    if (res.error) {
-      show("Error: " + res.error.message);
-    } else {
-      show("Success! Check email to verify your account.");
-    }
-  });
+  authMsg.innerText = error 
+    ? `Error: ${error.message}`
+    : "Success! Check your email to verify.";
+});
 </script>
 
 </body>
