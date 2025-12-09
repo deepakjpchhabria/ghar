@@ -32,6 +32,10 @@
 </style>
 </head>
 <body>
+  <!-- CHECK 1: does any JS load? -->
+<script>
+  try { alert('CHECK1: boot script loaded'); } catch(e){}
+</script>
   <div class="wrap">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
