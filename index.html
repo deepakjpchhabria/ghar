@@ -221,11 +221,26 @@ const signInBtnDbg = resetButton('signInBtn');
 const signupBtnDbg = resetButton('signupBtn');
 const passwordLoginBtnDbg = resetButton('passwordLoginBtn');
 
-/* Utility: show JSON onscreen */
 function showResult(prefix, res){
   const box = document.getElementById('authMsg');
+
+  // CASE 1 — absolutely nothing returned
+  if(res === undefined){
+    box.innerText = prefix + " → NO RESPONSE (undefined)";
+    alert(prefix + " → NO RESPONSE");
+    return;
+  }
+
+  // CASE 2 — null returned
+  if(res === null){
+    box.innerText = prefix + " → NULL response";
+    alert(prefix + " → NULL");
+    return;
+  }
+
+  // CASE 3 — normal Supabase object
   box.innerText = prefix + " → " + JSON.stringify(res, null, 2);
-  alert(prefix + " (check console + authMsg)");
+  alert(prefix + " → check authMsg");
   console.log(prefix, res);
 }
 
