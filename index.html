@@ -248,6 +248,74 @@ import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dis
     else authMsg.innerText = 'Check email to confirm (or you can sign in).';
   });
   
+  // ---- REPLACE / ADD this password-login handler (debug-friendly) ----
+(function attachPasswordLogin(){
+  // remove any existing listener (safe)
+  const existing = document.getElementById('passwordLoginBtn');
+  if(!existing){
+    console.warn('passwordLoginBtn element not found at attach time');
+    return;
+  }
+
+  // remove duplicate listeners (if any) by cloning node
+  const clone = existing.cloneNode(true);
+  existing.parentNode.replaceChild(clone, existing);
+
+  clone.addEventListener('click', async function passwordLoginHandler(e){
+    try {
+      e.preventDefault();
+      // immediate debug alert so you know this handler ran
+      alert('Password login handler fired');
+
+      const email = emailInput.value?.trim();
+      const pass = passwordInput.value?.trim();
+
+      if(!email || !pass){
+        alert('Enter email and password');
+        return;
+      }
+
+      // call supabase password sign-in
+      alert('Calling Supabase signInWithPassword...');
+      const resp = await supabase.auth.signInWithPassword({ email, password: pass });
+
+      // resp shape can be { data, error } or { error, data } depending on SDK; handle both
+      const err = resp?.error || (resp?.data && resp.data.error) || null;
+      const data = resp?.data || resp;
+
+      if(err){
+        // show full error information
+        const msg = err.message || JSON.stringify(err);
+        alert('Login failed: ' + msg);
+        return;
+      }
+
+      // success — show what we received
+      const userEmail = (data?.user?.email) ? data.user.email : (email || 'unknown');
+      alert('Login success: ' + userEmail);
+
+      // call existing post-login flow (if present)
+      if(typeof onSignedIn === 'function'){
+        try { onSignedIn(data.user || data); } catch(x){ console.warn('onSignedIn error', x); }
+      } else {
+        // update UI minimally
+        userArea.innerText = 'Signed in: ' + userEmail;
+      }
+    } catch(ex){
+      alert('Unexpected handler error: ' + (ex?.message || JSON.stringify(ex)));
+      console.error('passwordLoginHandler exception', ex);
+    }
+  });
+})();
+  
+  
+  
+  
+  
+  
+  
+  
+  
   // Password login (existing accounts created in Supabase dashboard)
 const passwordLoginBtn = document.getElementById('passwordLoginBtn');
 
