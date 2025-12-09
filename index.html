@@ -275,6 +275,9 @@ import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dis
 const passwordLoginBtn = document.getElementById('passwordLoginBtn');
 
 passwordLoginBtn?.addEventListener('click', async () => {
+  
+  alert('Password login handler fired');
+  
   const email = emailInput.value.trim();
   const pass = passwordInput.value.trim();
 
