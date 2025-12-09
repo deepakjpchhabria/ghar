@@ -207,74 +207,50 @@
     setupRealtime();
   }
 
-  // sign in (magic link)
-  signInBtn.addEventListener('click', async ()=>{
-    const email = emailInput.value.trim();
-    if(!email) return authMsg.innerText = 'Enter email';
-    authMsg.innerText = 'Sending magic link...';
-    const { error } = await supabase.auth.signInWithOtp({ email });
-    if(error) authMsg.innerText = 'Error: ' + error.message;
-    else authMsg.innerText = 'Magic link sent — check your email.';
-  });
+  /* ===== DEBUG AUTH HANDLERS – always fire, always show Supabase result ===== */
 
-  // sign up with password (simple)
-  signupBtn.addEventListener('click', async ()=>{
-    const email = emailInput.value.trim();
-    const pass = passwordInput.value.trim();
-    if(!email || !pass) return authMsg.innerText = 'Enter email & password';
-    authMsg.innerText = 'Creating account...';
-    const { data, error } = await supabase.auth.signUp({ email, password: pass });
-    if(error) authMsg.innerText = 'Error: ' + error.message;
-    else authMsg.innerText = 'Check email to confirm (or you can sign in).';
-  });
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-            
-            
-  
-  passwordLoginBtn.addEventListener("click", async () => {
-  authMsg.innerText = "Logging in...";
+/* Ensure clean buttons (no previous listeners) */
+function resetButton(id){
+  const old = document.getElementById(id);
+  const clone = old.cloneNode(true);
+  old.parentNode.replaceChild(clone, old);
+  return clone;
+}
 
+const signInBtnDbg = resetButton('signInBtn');
+const signupBtnDbg = resetButton('signupBtn');
+const passwordLoginBtnDbg = resetButton('passwordLoginBtn');
+
+/* Utility: show JSON onscreen */
+function showResult(prefix, res){
+  const box = document.getElementById('authMsg');
+  box.innerText = prefix + " → " + JSON.stringify(res, null, 2);
+  alert(prefix + " (check console + authMsg)");
+  console.log(prefix, res);
+}
+
+/* ===== MAGIC LINK SIGN IN ===== */
+signInBtnDbg.addEventListener('click', async ()=>{
   const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  if (!email || !password) {
-    authMsg.innerText = "Email & password required";
-    return;
-  }
-
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      authMsg.innerText = "Error: " + error.message;
-      return;
-    }
-
-    authMsg.innerText = "Success! Logged in.";
-    onSignedIn(data.user);
-
-  } catch (e) {
-    authMsg.innerText = "Unexpected error: " + e.message;
-  }
+  const res = await supabase.auth.signInWithOtp({ email }).catch(e=>({ error:e }));
+  showResult("SIGN-IN MAGIC", res);
 });
-  
-  
-  
+
+/* ===== SIGN UP (EMAIL + PASSWORD) ===== */
+signupBtnDbg.addEventListener('click', async ()=>{
+  const email = emailInput.value.trim();
+  const pass  = passwordInput.value.trim();
+  const res = await supabase.auth.signUp({ email, password: pass }).catch(e=>({ error:e }));
+  showResult("SIGN-UP", res);
+});
+
+/* ===== PASSWORD LOGIN ===== */
+passwordLoginBtnDbg.addEventListener('click', async ()=>{
+  const email = emailInput.value.trim();
+  const pass  = passwordInput.value.trim();
+  const res = await supabase.auth.signInWithPassword({ email, password: pass }).catch(e=>({ error:e }));
+  showResult("PASSWORD LOGIN", res);
+});
   
   
   
