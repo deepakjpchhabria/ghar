@@ -32,45 +32,6 @@
 </style>
 </head>
 <body>
-  <!-- BUILD STAMP + RUNTIME CHECK (always runs) -->
-  <div id="buildStamp" style="color:var(--muted);font-size:12px;margin-bottom:8px">Build: —</div>
-  <script>
-    (function(){
-      try{
-        // update build stamp immediately (so you know file is live)
-        const bs = document.getElementById('buildStamp');
-        if(bs) bs.innerText = 'Build: ' + new Date().toLocaleString();
-
-        // small helper to safely attach click alerts (non-module, works everywhere)
-        function attach(id){
-          const el = document.getElementById(id);
-          if(!el) return false;
-          // replace node to avoid duplicates
-          try {
-            const clone = el.cloneNode(true);
-            el.parentNode.replaceChild(clone, el);
-            clone.addEventListener('click', function(e){
-              e.preventDefault();
-              e.stopPropagation();
-              alert('CLICK DETECTED: ' + id);
-            });
-            return true;
-          } catch(err){ return false; }
-        }
-
-        // try attaching after a slight delay so DOM from GitHub Pages is ready
-        setTimeout(()=> {
-          const ids = ['signInBtn','signupBtn','passwordLoginBtn','postBtn','sendReq','refreshReq','signOut'];
-          const found = [];
-          ids.forEach(id => { if(attach(id)) found.push(id); });
-          console.log('Runtime attach attempted. Found:', found);
-        }, 300);
-      } catch(e){
-        try{ alert('Runtime attach error: ' + (e && e.message)); }catch(_){}
-        console.error(e);
-      }
-    })();
-  </script>
 
   <div class="wrap">
     <div style="display:flex;justify-content:space-between;align-items:center">
