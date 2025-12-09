@@ -283,59 +283,6 @@
   
   
 
-  // Password login (existing accounts created in Supabase dashboard)
-  (function attachPasswordLogin(){
-    const el = document.getElementById('passwordLoginBtn');
-    if(!el){
-      console.warn('passwordLoginBtn element not found at attach time');
-      return;
-    }
-    // replace node to avoid duplicate listeners (safe)
-    const clone = el.cloneNode(true);
-    el.parentNode.replaceChild(clone, el);
-
-    clone.addEventListener('click', async function passwordLoginHandler(e){
-      try {
-        e.preventDefault();
-        // immediate debug alert so you know this handler ran
-        // (you can remove the next alert line once verified)
-        alert('Password login handler fired');
-
-        const email = emailInput.value?.trim();
-        const pass = passwordInput.value?.trim();
-
-        if(!email || !pass){
-          alert('Enter email and password');
-          return;
-        }
-
-        // call supabase password sign-in
-        const resp = await supabase.auth.signInWithPassword({ email, password: pass });
-
-        const err = resp?.error || (resp?.data && resp.data.error) || null;
-        const data = resp?.data || resp;
-
-        if(err){
-          const msg = err.message || JSON.stringify(err);
-          alert('Login failed: ' + msg);
-          return;
-        }
-
-        const userEmail = (data?.user?.email) ? data.user.email : (email || 'unknown');
-        alert('Login success: ' + userEmail);
-
-        if(typeof onSignedIn === 'function'){
-          try { onSignedIn(data.user || data); } catch(x){ console.warn('onSignedIn error', x); }
-        } else {
-          userArea.innerText = 'Signed in: ' + userEmail;
-        }
-      } catch(ex){
-        alert('Unexpected handler error: ' + (ex?.message || JSON.stringify(ex)));
-        console.error('passwordLoginHandler exception', ex);
-      }
-    });
-  })();
-
   signOutBtn.addEventListener('click', async ()=>{
     await supabase.auth.signOut();
     showSignedOut();
