@@ -32,9 +32,15 @@
 </style>
 </head>
 <body>
-  <!-- CHECK 1: does any JS load? -->
+  <!-- CHECK 2: is the passwordLoginBtn present in DOM? -->
 <script>
-  try { alert('CHECK1: boot script loaded'); } catch(e){}
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    const el = document.getElementById('passwordLoginBtn');
+    if(el) alert('CHECK2: passwordLoginBtn FOUND');
+    else alert('CHECK2: passwordLoginBtn NOT FOUND');
+  } catch(e){ alert('CHECK2: error ' + (e?.message||e)); }
+});
 </script>
   <div class="wrap">
     <div style="display:flex;justify-content:space-between;align-items:center">
