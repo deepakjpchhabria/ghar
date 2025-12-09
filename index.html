@@ -1,103 +1,168 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sign Up</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body{
-      margin:0; padding:0;
-      font-family:system-ui, sans-serif;
-      height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#0b1326;
-      color:#fff;
-    }
-    .box{
-      width:300px;
-      padding:20px;
-      background:#111a33;
-      border-radius:10px;
-      box-shadow:0 8px 20px rgba(0,0,0,0.4);
-    }
-    input{
-      width:100%;
-      padding:10px;
-      border-radius:8px;
-      border:1px solid #333;
-      margin-top:10px;
-      background:#0b1326;
-      color:#fff;
-    }
-    button{
-      width:100%;
-      padding:12px;
-      margin-top:15px;
-      background:#ffb86b;
-      border:0;
-      border-radius:8px;
-      font-weight:700;
-      cursor:pointer;
-      color:#111;
-    }
-    #msg{
-      margin-top:12px;
-      font-size:13px;
-      color:#aaa;
-      white-space:pre-wrap;
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ghar — Sign Up</title>
+<style>
+  /* global safe defaults */
+  * { box-sizing: border-box; }
+  html,body{height:100%;margin:0}
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#071028,#02121b);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .card{
+    width:100%;
+    max-width:420px;
+    background: linear-gradient(180deg,#081428,#04101a);
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 12px 30px rgba(0,0,0,.5);
+  }
+
+  h1{margin:0 0 8px;font-size:20px}
+  .hint{color:#9fb0d1;font-size:13px;margin-bottom:12px}
+
+  label{display:block;margin-top:8px;font-size:13px;color:#cfe6ff}
+  input{
+    width:100%;
+    padding:12px 10px;
+    margin-top:6px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.06);
+    background:transparent;
+    color:#fff;
+    font-size:15px;
+  }
+
+  button{
+    width:100%;
+    margin-top:15px;
+    padding:12px;
+    border-radius:8px;
+    border:0;
+    font-weight:800;
+    cursor:pointer;
+    background:#ffb86b;
+    color:#111;
+    font-size:15px;
+  }
+  button[disabled]{opacity:0.6;cursor:not-allowed}
+
+  #msg{
+    margin-top:12px;
+    min-height:36px;
+    font-size:14px;
+    white-space:pre-wrap;
+  }
+  .error{ color: #ff6b6b; }
+  .success{ color: #4ade80; }
+
+  .muted{ color: #9fb0d1; font-size:13px; margin-top:6px; text-align:center;}
+</style>
 </head>
 <body>
 
-<div class="box">
-  <h2 style="margin:0 0 10px;">Sign Up</h2>
+  <div class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Ghar — Sign Up</h1>
+    <div class="hint">Create an account for your private friends & family wall.</div>
 
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
+    <label for="email">Email</label>
+    <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@domain.com" />
 
-  <button id="signup">Sign Up</button>
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="new-password" placeholder="Choose a password (min 6 chars)" />
 
-  <div id="msg"></div>
-</div>
+    <button id="signupBtn" type="button">Sign Up</button>
+
+    <div id="msg" aria-live="polite"></div>
+
+    <div class="muted">This is Sprint 1 — only sign up is implemented.</div>
+  </div>
 
 <script type="module">
-  // ------------------------------
-  // Replace with your project keys
-  // ------------------------------
-  const SUPABASE_URL = "https://jvdznmvyhywffdlunlwx.supabase.co";  // <-- replace
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZHpubXZ5aHl3ZmZkbHVubHd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMTU4OTIsImV4cCI6MjA4MDc5MTg5Mn0.FqTcMgBwNHR7S5oc1KV7PAJGWwFQbgnNZ52D6mGvI0Q";                    // <-- replace
-  // ------------------------------
+/* ----------------- CONFIG: paste your Supabase project values ----------------- */
+const SUPABASE_URL = "https://jvdznmvyhywffdlunlwx.supabase.co";  // <-- replace
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2ZHpubXZ5aHl3ZmZkbHVubHd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMTU4OTIsImV4cCI6MjA4MDc5MTg5Mn0.FqTcMgBwNHR7S5oc1KV7PAJGWwFQbgnNZ52D6mGvI0Q";                    // <-- replace                     // <-- replace
+/* ----------------------------------------------------------------------------- */
 
-  import { createClient } from "https://unpkg.com/@supabase/supabase-js@2.39.7/dist/esm/index.js";
+import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2.39.7/dist/esm/index.js';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+/* DOM refs */
+const emailEl = document.getElementById('email');
+const passEl  = document.getElementById('password');
+const btn     = document.getElementById('signupBtn');
+const msgEl   = document.getElementById('msg');
 
-  const email = document.getElementById("email");
-  const password = document.getElementById("password");
-  const signup = document.getElementById("signup");
-  const msg = document.getElementById("msg");
+/* helper: show message (validation / error / success) */
+function showMessage(text, type='') {
+  msgEl.textContent = text || '';
+  msgEl.className = type; // '' | 'error' | 'success'
+}
 
-  function show(m){ msg.innerText = m; }
+/* client-side validation */
+function validate(email, password) {
+  if(!email) return { ok:false, message:'Enter email' };
+  // simple email regex (good enough for UI validation)
+  const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRx.test(email)) return { ok:false, message:'Enter a valid email address' };
+  if(!password) return { ok:false, message:'Enter password' };
+  if(password.length < 6) return { ok:false, message:'Password must be at least 6 characters' };
+  return { ok:true };
+}
 
-  signupBtn.addEventListener('click', async () => {
-  const email = emailInput.value.trim();
-  const pass  = passwordInput.value.trim();
-  if (!email || !pass) return authMsg.innerText = "Enter email & password";
+/* disable UI while request in progress */
+function setBusy(b) {
+  btn.disabled = !!b;
+  emailEl.disabled = !!b;
+  passEl.disabled = !!b;
+}
 
-  authMsg.innerText = "Creating account...";
-  const { data, error } = await supabase.auth.signUp({ email, password: pass });
+/* main handler: sign up only */
+btn.addEventListener('click', async () => {
+  showMessage('', '');
+  const email = (emailEl.value || '').trim();
+  const password = (passEl.value || '').trim();
 
-  authMsg.innerText = error 
-    ? `Error: ${error.message}`
-    : "Success! Check your email to verify.";
+  const v = validate(email, password);
+  if(!v.ok) { showMessage(v.message, 'error'); return; }
+
+  setBusy(true);
+  showMessage('Creating account...', '');
+
+  try {
+    // call Supabase signUp
+    const res = await supabase.auth.signUp({ email, password });
+
+    // Normalized handling for v2 SDK: res = { data: {...}, error: {...} }
+    if(res?.error) {
+      showMessage('Error: ' + (res.error.message || JSON.stringify(res.error)), 'error');
+    } else {
+      // Success: show explicit success message for Sprint 1 acceptance criteria
+      showMessage('Success! Account created. Please check your email to verify.', 'success');
+      // Keep fields intact (QA can inspect). Do NOT auto-redirect or log in.
+    }
+  } catch (e) {
+    // network / unexpected errors
+    showMessage('Unexpected error: ' + (e?.message || String(e)), 'error');
+    console.error('Signup error', e);
+  } finally {
+    setBusy(false);
+  }
+});
+
+/* helpful: enable Enter key to trigger signup from password field */
+passEl.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') btn.click();
 });
 </script>
-
 </body>
 </html>
