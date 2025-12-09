@@ -147,7 +147,7 @@
  - If not found (404 or network error), show friendly placeholder overlay
 */
 document.getElementById('requestBtn').addEventListener('click', async () => {
-  const target = '/request-invite.html';
+  const target = '/ghar/request-invite.html';
   try {
     // we do a HEAD request if supported; fallback to GET for some hosts
     const resp = await fetch(target, { method: 'HEAD' });
