@@ -32,51 +32,6 @@
 </style>
 </head>
 <body>
-  <!-- DEBUG SNIPPET: Paste this right after <body> -->
-<script>
-  // global error catcher (alerts any JS runtime error)
-  window.onerror = function(message, source, lineno, colno, error){
-    try { alert('JS ERROR: ' + message + ' (line ' + lineno + ')'); } catch(e){}
-    console.error('JS ERROR', message, source, lineno, colno, error);
-    return false;
-  };
-
-  // quick check that the browser loads this script
-  try { alert('DEBUG: booting — script loaded'); } catch(e){}
-
-  // Wait for DOM ready, then attach click listeners to all important buttons
-  document.addEventListener('DOMContentLoaded', function(){
-    try {
-      alert('DEBUG: DOMContentLoaded');
-      const ids = [
-        'signInBtn','signupBtn','passwordLoginBtn','signOut','saveProfile',
-        'sendReq','refreshReq','postBtn','refreshFeed','passwordLoginBtn'
-      ];
-      const found = [];
-      const missing = [];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if(el){
-          found.push(id);
-          // attach a safe click listener to show it fires
-          el.addEventListener('click', function(ev){
-            ev.stopPropagation();
-            ev.preventDefault();
-            try { alert('CLICK: '+id+' clicked'); } catch(e){}
-            return false;
-          });
-        } else {
-          missing.push(id);
-        }
-      });
-      alert('DEBUG: found -> ' + (found.length ? found.join(', ') : '[none]') + '\nmissing -> ' + (missing.length ? missing.join(', ') : '[none]'));
-    } catch(err){
-      try{ alert('DEBUG internal error: ' + (err?.message||err)); }catch(e){}
-      console.error(err);
-    }
-  });
-</script>
-<!-- END DEBUG SNIPPET -->
   <div class="wrap">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
