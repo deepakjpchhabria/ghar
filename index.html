@@ -32,7 +32,42 @@
 </style>
 </head>
 <body>
+  <!-- VERY SIMPLE RUNTIME CHECK (paste right after <body>) -->
+<script>
+  try{
+    // show a visible build time so you know the file is live
+    (function(){
+      const el = document.getElementById('buildStamp');
+      if(el) el.innerText = 'Build: ' + new Date().toLocaleString();
+    })();
+
+    // helper to safely attach once
+    function attach(id, name){
+      const btn = document.getElementById(id);
+      if(!btn) return;
+      // remove previous by cloning
+      const clone = btn.cloneNode(true);
+      btn.parentNode.replaceChild(clone, btn);
+      clone.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        alert('CLICK DETECTED: ' + name);
+      }, { once: false });
+    }
+
+    // attach to keys we care about
+    ['signInBtn','signupBtn','passwordLoginBtn','postBtn','sendReq','refreshReq','signOut'].forEach(id=>{
+      attach(id, id);
+    });
+
+    // quick visual console for mobile: display connected info
+    console.log('Runtime check attached to buttons (if present).');
+  }catch(e){
+    try{ alert('Runtime check error: ' + (e && e.message)); }catch(_){}
+  }
+</script>
   <div class="wrap">
+    <div id="buildStamp" style="color:var(--muted);font-size:12px;margin-bottom:8px">Build: —</div>
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
         <h1>Ghar</h1>
