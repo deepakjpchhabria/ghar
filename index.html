@@ -248,6 +248,7 @@ function showResult(prefix, res){
 signInBtnDbg.addEventListener('click', async ()=>{
   const email = emailInput.value.trim();
   const res = await supabase.auth.signInWithOtp({ email }).catch(e=>({ error:e }));
+  alert(res);
   showResult("SIGN-IN MAGIC", res);
 });
 
