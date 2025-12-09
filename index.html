@@ -5,14 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Ghar — Where only your real people live</title>
 <style>
-  /* global reset */
-  * { box-sizing: border-box; }
-  html,body { height:100%; margin:0; }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
   body{
     display:flex;
     align-items:center;
     justify-content:center;
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;
     background: radial-gradient(1200px 600px at 10% 10%, rgba(255,184,107,0.03), transparent 8%),
                 linear-gradient(180deg,#071028 0%, #02121b 100%);
     color:#fff;
@@ -23,7 +22,7 @@
     width:100%;
     max-width:820px;
     text-align:center;
-    padding:30px;
+    padding:28px;
     border-radius:14px;
     background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.006));
     box-shadow: 0 10px 40px rgba(2,6,23,0.6);
@@ -34,39 +33,31 @@
     display:inline-block;
     width:120px;
     height:120px;
-    margin:0 auto 18px;
+    margin:0 auto 12px;
     will-change: transform, filter;
     animation: floaty 6s ease-in-out infinite;
   }
-  @media (max-width:420px){
-    .logo{ width:92px; height:92px; margin-bottom:12px; }
-  }
+  @media (max-width:420px){ .logo{ width:92px; height:92px; margin-bottom:8px } }
 
   h1{
-    margin:0;
+    margin:6px 0 0;
     font-size:34px;
-    letter-spacing:0.6px;
+    letter-spacing:0.4px;
     font-weight:800;
     line-height:1;
   }
   @media (max-width:420px){ h1{ font-size:26px } }
 
   .tag{
-    margin-top:10px;
+    margin-top:8px;
     color:#9fb0d1;
     font-size:16px;
     max-width:680px;
-    margin-left:auto; margin-right:auto;
+    margin-left:auto;margin-right:auto;
   }
   @media (max-width:420px){ .tag{ font-size:14px } }
 
-  .accent{ color:#ffb86b; }
-
-  /* CTA */
-  .cta {
-    margin-top:22px;
-    display:inline-block;
-  }
+  .cta { margin-top:22px; }
   .btn {
     display:inline-flex;
     align-items:center;
@@ -79,37 +70,47 @@
     font-size:15px;
     background:#ffb86b;
     color:#111;
-    cursor:default; /* intentionally non-interactive for Story 2 */
+    cursor:pointer;
     box-shadow: 0 6px 18px rgba(0,0,0,0.35);
   }
-  .btn:focus { outline: 3px solid rgba(255,184,107,0.18); }
+  .btn:focus { outline: 3px solid rgba(255,184,107,0.18); outline-offset:4px; }
 
   .muted { margin-top:14px; color:#7f98b1; font-size:13px; }
 
-  /* subtle float */
   @keyframes floaty {
     0% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
     100% { transform: translateY(0); }
   }
 
-  /* decorative footer */
-  .credit { margin-top:18px; color:#7f98b1; font-size:12px; }
-
+  /* overlay placeholder */
+  #placeholderOverlay{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(2,6,23,0.6);
+    z-index:9999;
+    padding:20px;
+  }
+  #placeholderCard{
+    max-width:560px;
+    width:100%;
+    background:linear-gradient(180deg,#0f1724,#071428);
+    padding:18px;border-radius:12px;color:#fff;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.6)
+  }
+  .placeholderTitle{font-weight:900;font-size:18px;margin-bottom:8px}
+  .placeholderMsg{color:#9fb0d1;margin-bottom:14px}
+  .closeBtn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:#9fb0d1;cursor:pointer}
 </style>
 </head>
 <body>
   <div class="wrap" role="main" aria-labelledby="gh-title">
     <div class="logo" aria-hidden="true">
-      <!-- inline SVG house + heart -->
+      <!-- simple house + heart -->
       <svg viewBox="0 0 120 120" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ghar logo">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1">
-            <stop offset="0" stop-color="#ffb86b" />
-            <stop offset="1" stop-color="#ff6b6b" />
-          </linearGradient>
-        </defs>
-
+        <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#ffb86b"/><stop offset="1" stop-color="#ff6b6b"/></linearGradient></defs>
         <path d="M10 50 L60 14 L110 50 V92 H10 Z" fill="rgba(255,255,255,0.03)"/>
         <path d="M15 50 L60 20 L105 50" fill="none" stroke="url(#g)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
         <rect x="26" y="52" width="68" height="38" rx="6" ry="6" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)" stroke-width="1.2"/>
@@ -118,20 +119,69 @@
       </svg>
     </div>
 
-    <h1 id="gh-title">Ghar <span class="accent">—</span></h1>
-    <div class="tag">Where only your real people live.</div>
+    <h1 id="gh-title">Ghar</h1>
+    <div class="tag">Where only your real people live</div>
 
-    <!-- Story 2 CTA (intentionally non-interactive) -->
-    <div class="cta" role="region" aria-label="Invite call to action">
-      <button class="btn" aria-disabled="true" title="Invite functionality will be available in a later story">
-        Request an Invite
-      </button>
+    <div class="cta" role="region" aria-label="Request invite">
+      <button id="requestBtn" class="btn" aria-describedby="ctaHint">Request Invite</button>
     </div>
 
-    <div class="muted">Invite-only. Private. For family & close friends.</div>
-    <div class="credit">Prototype • Sprint 2 — static landing (no signup yet)</div>
+    <div id="ctaHint" class="muted">Invite-only. Private. For family & close friends.</div>
   </div>
 
-  <!-- No JS: Story 2 requires no navigation or behavior -->
+  <!-- placeholder overlay shown when invite page not available -->
+  <div id="placeholderOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="placeholderCard">
+      <div class="placeholderTitle">Invite request screen coming soon…</div>
+      <div class="placeholderMsg">We’re building the invite flow. For now you can check back later — or if you prefer, message the owner for an invite.</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button id="closePlaceholder" class="closeBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/*
+ Story 2 behavior:
+ - Button should navigate to /request-invite.html if it exists (HTTP 200)
+ - If not found (404 or network error), show friendly placeholder overlay
+*/
+document.getElementById('requestBtn').addEventListener('click', async () => {
+  const target = '/request-invite.html';
+  try {
+    // we do a HEAD request if supported; fallback to GET for some hosts
+    const resp = await fetch(target, { method: 'HEAD' });
+    if(resp && resp.ok){
+      window.location.href = target;
+      return;
+    }
+    // if HEAD not allowed (405) try GET (but keep it lightweight)
+    if(resp && resp.status === 405){
+      const r2 = await fetch(target, { method: 'GET' });
+      if(r2 && r2.ok){ window.location.href = target; return; }
+    }
+    // not OK -> show placeholder
+    showPlaceholder();
+  } catch(e){
+    // network error or CORS; attempt navigation anyway — if it 404s the server will handle
+    try { window.location.href = target; } catch(x){}
+    // and also show placeholder if navigation didn't happen quickly
+    setTimeout(showPlaceholder, 300);
+  }
+});
+
+function showPlaceholder(){
+  const ov = document.getElementById('placeholderOverlay');
+  ov.style.display = 'flex';
+  ov.setAttribute('aria-hidden','false');
+  document.getElementById('closePlaceholder').focus();
+}
+document.getElementById('closePlaceholder').addEventListener('click', ()=>{
+  const ov = document.getElementById('placeholderOverlay');
+  ov.style.display='none';
+  ov.setAttribute('aria-hidden','true');
+  document.getElementById('requestBtn').focus();
+});
+</script>
 </body>
 </html>
