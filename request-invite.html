@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Request Invite — Ghar</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    background: linear-gradient(180deg,#071028 0%, #02121b 100%);
+    color:#fff;
+    padding:20px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+  }
+  .card{
+    width:100%;
+    max-width:640px;
+    background:linear-gradient(180deg,#0f1724,#071428);
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 12px 30px rgba(0,0,0,.6);
+  }
+  h1{margin:0;font-size:20px;font-weight:900}
+  .lead{color:#9fb0d1;margin-top:8px}
+  form{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+  label{font-size:13px;color:#cfe6ff}
+  input[type=email], input[type=text], textarea {
+    padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);
+    background:transparent;color:#fff;width:100%;font-size:15px;
+  }
+  textarea{min-height:120px;resize:vertical}
+  .row{display:flex;gap:8px;align-items:center}
+  button{
+    margin-top:6px;padding:12px;border-radius:10px;border:0;background:#ffb86b;color:#111;font-weight:800;cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,0.35);font-size:15px;
+  }
+  .hint{font-size:13px;color:#9fb0d1;margin-top:12px}
+  .msg{margin-top:12px;font-size:14px;min-height:36px}
+  .muted{color:#7f98b1;font-size:13px}
+  @media (max-width:520px) { .card{padding:16px} }
+</style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="pageTitle">
+    <h1 id="pageTitle">Request an Invite</h1>
+    <div class="lead">Ghar — Where only your real people live</div>
+
+    <form id="inviteForm" novalidate>
+      <div>
+        <label for="email">Email <span aria-hidden="true">*</span></label>
+        <input id="email" name="email" type="email" placeholder="you@domain.com" required autocomplete="email" />
+      </div>
+
+      <div>
+        <label for="name">Name (optional)</label>
+        <input id="name" name="name" type="text" placeholder="Your full name" autocomplete="name" />
+      </div>
+
+      <div>
+        <label for="note">Short note (optional) <small style="color:#9fb0d1">(max 200 chars)</small></label>
+        <textarea id="note" name="note" maxlength="200" placeholder="Who invited you / why you'd like to join"></textarea>
+      </div>
+
+      <div class="row">
+        <button id="submitBtn" type="submit">Request Invite</button>
+      </div>
+
+      <div id="msg" class="msg" aria-live="polite"></div>
+      <div class="hint muted">This is a static prototype. Invite capture & backend will be implemented in the next sprint.</div>
+    </form>
+  </main>
+
+<script>
+  // Minimal client behavior (no backend): show placeholder confirmation and disable submit.
+  (function(){
+    const form = document.getElementById('inviteForm');
+    const msg = document.getElementById('msg');
+    const btn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // simple presence check for UX (not full validation)
+      const email = (document.getElementById('email').value || '').trim();
+      if(!email){
+        msg.textContent = 'Enter email.';
+        msg.style.color = '#ff6b6b';
+        document.getElementById('email').focus();
+        return;
+      }
+      // show placeholder confirmation (no persistence in this sprint)
+      msg.style.color = '#4ade80';
+      msg.textContent = 'Invite request capture will be available in the next sprint. We got your intent — thank you!';
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+      // Keep form values intact for QA inspection
+    });
+  })();
+</script>
+</body>
+</html>
